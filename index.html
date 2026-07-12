@@ -29,23 +29,15 @@
 <body>
 
   <!-- ══════════════════════ AMBIENT BACKGROUND ══════════════════════ -->
-  <!-- Layered rainy-city scene. #bg-photo shows assets/background.jpg (or a
-       Gallery choice) when available; the CSS scene layers sit behind it so
-       the app never looks empty even with no photo. -->
+  <!-- Full-screen looping video background with a black overlay for contrast,
+       so the white UI panels stay crisp and readable over the motion. The old
+       CSS scene layers remain as a fallback behind the video. -->
   <div id="bg-scene" aria-hidden="true">
     <div class="bg-sky"></div>
-    <div class="bg-rays"></div>     <!-- slow rotating light rays -->
-    <div class="bg-buildings"></div>
-    <div class="bg-bokeh"></div>
-    <canvas id="rain-canvas"></canvas>
-    <div class="bg-fog"></div>
-    <div id="bg-photo"></div>       <!-- user photo layer, set by app.js -->
-    <div class="bg-aurora"></div>   <!-- slow drifting colour glow -->
-    <div class="bg-grid"></div>     <!-- soft animated tech grid -->
-    <div class="bg-tint"></div>
-    <div class="bg-perspective"></div><!-- hi-tech perspective floor grid (above tint) -->
-    <div class="bg-scan"></div>     <!-- subtle scan sweep -->
-    <canvas id="ambient-canvas"></canvas><!-- drifting particles + light streaks -->
+    <div id="bg-photo"></div>       <!-- user photo / Gallery scene (fallback) -->
+    <video id="bg-video" autoplay muted loop playsinline preload="auto"
+           src="https://res.cloudinary.com/dzluzmzsf/video/upload/v1783836532/Video_background_eudb0m.mp4"></video>
+    <div id="bg-video-overlay"></div><!-- black overlay to clear the UI -->
   </div>
 
   <!-- ════════════════════════ LOADING SCREEN ════════════════════════ -->
@@ -79,9 +71,14 @@
           <small>Leadership &amp; Ministry Directory</small>
         </span>
       </button>
-      <div class="appbar-clock">
-        <span id="hud-clock">--:--</span>
-        <span id="hud-date">—</span>
+      <div class="appbar-right">
+        <div class="appbar-clock">
+          <span id="hud-clock">--:--</span>
+          <span id="hud-date">—</span>
+        </div>
+        <button id="cinema-btn" class="appbar-icon-btn" type="button" title="Cinema mode — hide interface, show video only" aria-label="Cinema mode">
+          <svg viewBox="0 0 24 24"><path d="M4 9V6a2 2 0 0 1 2-2h3M20 9V6a2 2 0 0 0-2-2h-3M4 15v3a2 2 0 0 0 2 2h3M20 15v3a2 2 0 0 1-2 2h-3" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
       </div>
     </header>
 
@@ -510,6 +507,12 @@
       <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3"/><path d="M12 3.5v3M12 17.5v3M3.5 12h3M17.5 12h3"/></svg>
     </span>
     <span class="btw-label">BROTHER<br>THOMAS</span>
+  </button>
+
+  <!-- Cinema mode: shown only while the interface is hidden — restores the UI -->
+  <button id="cinema-exit" type="button" aria-label="Show interface">
+    <svg viewBox="0 0 24 24"><path d="M9 4H6a2 2 0 0 0-2 2v3M15 4h3a2 2 0 0 1 2 2v3M9 20H6a2 2 0 0 1-2-2v-3M15 20h3a2 2 0 0 0 2-2v-3" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span>Show Interface</span>
   </button>
 
   <!-- Zoom readout: flashes while pinch-stretching the dashboard or a panel -->

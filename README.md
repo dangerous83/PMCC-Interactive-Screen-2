@@ -53,16 +53,30 @@ The home screen is a straightforward directory — no gestures to learn:
 
 ## Brand & background
 
-The interface uses a **clean corporate palette**: a white canvas with a very
-subtle blueprint grid, neutral slate text, and a single **corporate-blue
-accent** (the default). The background is calm and static by design — no
-animated rain, aurora, or scan effects — so the content stays the focus. The app
-ships with a light **Clean White** background by default; pick a different light
-scene from **Gallery** (Cool Mist, Light Slate, Soft Azure, Pale Sky, Warm Sand,
-Fresh Mint, Pearl Grey, Soft Linen — all need no image file), or drop your own
-photo at `assets/background.jpg` and choose **Signature**. Change the accent to
-another professional colour (Navy, Indigo, Teal, Emerald, Sky, Slate, Amber,
-Rose, Violet) in **Settings ▸ Accent Color**.
+The interface uses a **clean corporate palette** — neutral slate text and a
+single **corporate-blue accent** (the default) — laid over a **full-screen
+looping video background** with a **black overlay** so the white content panels
+stay crisp and readable over the motion. Change the accent to another
+professional colour (Navy, Indigo, Teal, Emerald, Sky, Slate, Amber, Rose,
+Violet) in **Settings ▸ Accent Color**.
+
+### Video background
+
+- The looping background video is set in `index.html` on the `#bg-video`
+  element (`src="…"`). Replace that URL to use a different clip; the video is
+  `muted`, `loop`, `autoplay`, `playsinline` and covers the whole screen.
+- The overlay darkness lives in `styles.css` → `#bg-video-overlay` — adjust the
+  `rgba(...)` alpha to make the video lighter or darker behind the UI.
+- **Online note:** the shipped video is hosted remotely (Cloudinary), so it
+  needs internet on first load. For a fully **offline** kiosk, download the clip
+  to `assets/` and point `#bg-video`'s `src` at the local file. If the video
+  can't load, the app falls back to a neutral dark backdrop and still works.
+
+### Cinema mode (video only)
+
+Tap the **⛶ button** in the top-right of the app bar to **hide the entire
+interface** and show just the looping video full-screen. A floating **“Show
+Interface”** button (top-right) — or **Esc** — brings the UI back.
 
 ## The dock features
 
