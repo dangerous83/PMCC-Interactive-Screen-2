@@ -168,7 +168,7 @@ input, select{ font-family:inherit; }
 .appbar-clock #hud-clock{ font-size:clamp(16px,1.9vmin,36px); font-weight:700; color:var(--accent); font-variant-numeric:tabular-nums; }
 .appbar-clock #hud-date{ font-size:clamp(10px,1.1vmin,20px); font-weight:600; letter-spacing:.08em; color:var(--text-dim); }
 
-.home{ flex:1; min-height:0; overflow-y:auto; padding:clamp(20px,3vmin,60px) clamp(20px,4vmin,90px) clamp(150px,15vmin,240px); }
+.home{ flex:1; min-height:0; overflow-y:auto; padding:clamp(30px,6vmin,120px) clamp(20px,4vmin,90px) clamp(150px,15vmin,240px); }
 .home::-webkit-scrollbar{ width:8px; } .home::-webkit-scrollbar-thumb{ background:var(--line-strong); border-radius:4px; }
 
 /* hero */
