@@ -29,14 +29,27 @@ or open the file normally and press **F11** for fullscreen.
 | `assets/logo.png` | Center logo — replace with your own square PNG |
 | `assets/background.jpg` | *(optional)* drop your own background photo here |
 
-## How to use it (touch gestures)
+## How to use it (touch)
 
-- **Tap the center logo** to reveal the organized grid of section icons; tap again to collapse.
-- **Tap or press-and-hold** an icon to open its section — opening plays a subtle, professional transition with a soft chime.
-- **Pinch** the dashboard to stretch the whole network; pinch inside a panel to enlarge the text. Double-tap empty space to reset. (Mouse: wheel = dashboard zoom, Ctrl+wheel = panel zoom.)
-- **Bottom dock** (icons, centered) holds: Home · Gallery · Settings · Brother Thomas · Browser · Search · Sound (mute).
-- **Search** (dock, or Ctrl/⌘-K) pops up centered and blurs everything to focus the search bar.
-- Every panel has an **X** (top-right) and a **BACK** button. **Esc** also steps back out.
+The home screen is a straightforward directory — no gestures to learn:
+
+- **App bar** (top): the church logo/wordmark on the left, a live clock and date
+  on the right. **Tap the logo** (or the **About the Church** button) to open a
+  clean panel with the church's facts, the meaning of the “4th Watch”, and its
+  beliefs.
+- **Welcome hero**: the church name, tagline, and key stats (founded, countries,
+  locale churches, believers).
+- **Ministry cards**: an always-visible grid — Apostle · Bishops · Presbyters ·
+  Pastors · Elders · Branches · History. **Tap a card** to open it. Leadership
+  cards open a tappable name list → profile; Branches opens the interactive
+  globe; History opens the timeline panel. Opening plays a subtle transition
+  with a soft chime.
+- **Bottom dock** (centered): Home · Directory · Settings · Browser · Search ·
+  Sound (mute). Brother Thomas floats as an assistant button in the bottom-right.
+- **Search** (dock, or Ctrl/⌘-K) pops up centered and blurs everything to focus
+  the search bar.
+- Every panel has an **X** (top-right) and a **BACK** button. **Esc** also steps
+  back out.
 
 ## Brand & background
 
@@ -74,25 +87,25 @@ No photos are used for people right now — each entry shows a soft-glow icon gl
 
 ## Dashboard layout & interactions
 
-The dashboard is an organized **node network**: **Apostle** at top-centre, with
-**Bishops · Presbyters · Pastors · Elders · Branches · History** spaced evenly
-around the logo and joined to it by glowing connector lines.
+The dashboard is a clean **card directory**: a welcome hero with the church's
+key facts, then a responsive grid of ministry cards — **Apostle · Bishops ·
+Presbyters · Pastors · Elders · Branches · History** — each showing its icon, a
+count, and a short descriptor. Everything is visible at once and one tap away;
+there is no hidden “reveal” step.
 
-- **Tap the center logo** → the section icons glide out one node at a time and
-  each glowing connector line draws to its icon in turn, sweeping around the
-  ring. Tap the logo again to collapse the network.
-- **Drag** any icon to reposition it (its connector line follows and the spot is
-  remembered); **pinch or scroll** to stretch the whole network; **double-tap**
-  empty space to reset the zoom.
-- **Tap a leadership icon** (Apostle / Bishops / Presbyters / Pastors / Elders)
-  → an animated **name dropdown** opens beside it listing everyone in that group;
-  tap a name → the **profile modal** opens with a **large portrait on the left**.
-  The right side shows the person's **About** description by default, with a row
-  of tab buttons to switch to *Ministry Role · Church Assignment · Messages &
-  Teachings · Activities* (the person's photo gallery).
-- **Brother Thomas** floats as a looping widget on the right edge (and is in the
-  dock). Tapping it opens the assistant with **voice active** — he **speaks his
-  replies** in a natural British voice. Toggle voice with the header button.
+- **Tap the logo / About the Church** → a panel with the church's tagline,
+  headquarters, founding, reach, the meaning of the “4th Watch”, and its beliefs.
+- **Tap a leadership card** (Bishops / Presbyters / Pastors / Elders) → a clean,
+  tappable **name list**; tap a name → the **profile modal** opens with a **large
+  portrait on the left**. The right side shows the person's **About** description
+  by default, with a row of tab buttons to switch to *Ministry Role · Church
+  Assignment · Messages & Teachings · Activities* (the person's photo gallery).
+- **Tap the Apostle card** → the section panel with the leader's portrait,
+  biography and key facts.
+- **Brother Thomas** floats as an assistant button in the **bottom-right** (and
+  the Directory/Search/Settings live in the dock). Tapping it opens the assistant
+  with **voice active** — he **speaks his replies** in a natural British voice.
+  Toggle voice with the header button.
 - **Tap Branches** → an **interactive 3D Earth** with **real coastlines**
   (Natural Earth data, ~8.5k points in `assets/world-land.js`): a blue-ocean
   globe with detailed green continents, atmosphere glow, day/night shading and a
@@ -149,8 +162,9 @@ All data lives in `app.js → CONTENT`:
   > instead of a cached old copy. If a photo ever looks stale, also try a
   > hard refresh: **Ctrl+Shift+R** (Windows) / **Cmd+Shift+R** (Mac).
 
-The existing orbital dashboard (Apostle, Bishops, Presbyters, …) is unchanged —
-the Directory is an additional, more structured way to browse the same people.
+The home ministry cards and the **DIRECTORY** dock button are two ways into the
+same people — the cards jump straight to a category's name list, while the dock
+opens a category chooser first.
 
 ## Connecting Brother Thomas to a local AI (OpenJarvis)
 

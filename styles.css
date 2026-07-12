@@ -139,7 +139,88 @@ input, select{ font-family:inherit; }
 #dashboard.visible{ opacity:1; }
 #dashboard.defocus{ filter:blur(8px); opacity:.5; pointer-events:none; }
 
-/* — top bar — */
+/* ══════════════ HOME · app bar + hero + ministry card grid ═══════════ */
+.appbar{ display:flex; align-items:center; justify-content:space-between; gap:2vmin; flex:0 0 auto; z-index:2;
+  padding:clamp(12px,1.6vmin,30px) clamp(20px,3vmin,64px);
+  border-bottom:1px solid var(--line); background:rgba(255,255,255,.78); backdrop-filter:blur(8px); }
+.brand{ display:flex; align-items:center; gap:1.4vmin; background:none; border:none; padding:.5vmin .8vmin .5vmin .5vmin; border-radius:calc(var(--radius)*.9); transition:background .2s, transform .15s var(--ease-spring); }
+.brand:hover{ background:var(--surface-3); }
+.brand:active{ transform:scale(.98); }
+.brand img{ width:clamp(40px,4.4vmin,82px); height:auto; border-radius:50%; box-shadow:var(--shadow-sm); }
+.brand-tx{ display:flex; flex-direction:column; align-items:flex-start; line-height:1.15; }
+.brand-tx b{ font-size:clamp(15px,1.7vmin,32px); font-weight:800; letter-spacing:.03em; color:var(--ink); }
+.brand-tx b span{ color:var(--accent); }
+.brand-tx small{ font-size:clamp(9px,1vmin,18px); font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:var(--text-dim); }
+.appbar-clock{ display:flex; flex-direction:column; align-items:flex-end; line-height:1.1; }
+.appbar-clock #hud-clock{ font-size:clamp(16px,1.9vmin,36px); font-weight:700; color:var(--accent); font-variant-numeric:tabular-nums; }
+.appbar-clock #hud-date{ font-size:clamp(10px,1.1vmin,20px); font-weight:600; letter-spacing:.08em; color:var(--text-dim); }
+
+.home{ flex:1; min-height:0; overflow-y:auto; padding:clamp(20px,3vmin,60px) clamp(20px,4vmin,90px) clamp(150px,15vmin,240px); }
+.home::-webkit-scrollbar{ width:8px; } .home::-webkit-scrollbar-thumb{ background:var(--line-strong); border-radius:4px; }
+
+/* hero */
+.hero{ display:flex; align-items:center; justify-content:space-between; gap:clamp(20px,4vmin,80px); flex-wrap:wrap;
+  padding:clamp(22px,3.2vmin,64px) clamp(24px,3.4vmin,70px);
+  background:linear-gradient(135deg, #ffffff 0%, #e9f0fb 100%);
+  border:1px solid var(--line); border-radius:calc(var(--radius)*1.8); box-shadow:var(--shadow-md);
+  animation:fade-up .5s var(--ease-out) both; }
+.hero-main{ flex:1 1 46ch; min-width:0; }
+.hero-kicker{ font-size:clamp(10px,1.1vmin,20px); font-weight:700; letter-spacing:.32em; color:var(--accent); }
+.hero-title{ margin-top:1vmin; font-size:clamp(22px,3vmin,58px); font-weight:800; line-height:1.12; color:var(--ink); }
+.hero-title span{ color:var(--accent); font-weight:700; }
+.hero-tagline{ margin-top:1.2vmin; font-size:clamp(13px,1.5vmin,30px); color:var(--text-dim); }
+.hero-cta{ margin-top:2.2vmin; display:inline-flex; align-items:center; gap:.8vmin; padding:clamp(10px,1.3vmin,26px) clamp(18px,2.2vmin,44px);
+  background:var(--accent); border:1px solid var(--accent); border-radius:999px; color:#fff; font-size:clamp(12px,1.4vmin,28px); font-weight:600; box-shadow:var(--shadow-sm); transition:background .2s, transform .2s var(--ease-spring); }
+.hero-cta svg{ width:1.3em; height:1.3em; }
+.hero-cta:hover{ background:var(--accent-2); }
+.hero-cta:active{ transform:scale(.96); }
+.hero-stats{ flex:0 1 auto; display:grid; grid-template-columns:repeat(2,minmax(clamp(90px,10vmin,180px),1fr)); gap:clamp(10px,1.4vmin,26px); }
+.hero-stats .stat{ text-align:center; padding:clamp(12px,1.6vmin,32px) clamp(14px,1.8vmin,36px); background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow-sm); }
+.hero-stats dt{ font-size:clamp(20px,2.6vmin,52px); font-weight:800; color:var(--accent); line-height:1; }
+.hero-stats dd{ margin-top:.6vmin; font-size:clamp(9px,1vmin,19px); font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:var(--text-dim); }
+
+/* section header */
+.section-head{ margin:clamp(24px,3.4vmin,64px) .5vmin clamp(14px,2vmin,36px); }
+.section-head h2{ font-size:clamp(18px,2.2vmin,44px); font-weight:800; color:var(--ink); }
+.section-head p{ margin-top:.5vmin; font-size:clamp(12px,1.3vmin,26px); color:var(--text-dim); }
+
+/* ministry card grid */
+.section-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(clamp(220px,22vmin,340px),1fr)); gap:clamp(14px,1.8vmin,36px); }
+.section-card{ display:flex; flex-direction:column; gap:clamp(12px,1.6vmin,28px); text-align:left;
+  padding:clamp(16px,2vmin,40px); min-height:clamp(150px,17vmin,300px);
+  background:var(--surface); border:1px solid var(--line); border-radius:calc(var(--radius)*1.3);
+  box-shadow:var(--shadow-sm); cursor:pointer;
+  transition:transform .22s var(--ease-spring), box-shadow .25s, border-color .2s;
+  animation:fade-up .5s var(--ease-out) both; }
+.section-card:hover{ transform:translateY(-.6vmin); box-shadow:var(--shadow-lg); border-color:color-mix(in srgb, var(--accent) 40%, var(--line)); }
+.section-card:active{ transform:scale(.98); }
+.sc-top{ display:flex; align-items:center; justify-content:space-between; }
+.sc-icon{ width:clamp(46px,5vmin,96px); aspect-ratio:1; display:grid; place-items:center; border-radius:24%;
+  background:var(--accent-soft); border:1px solid color-mix(in srgb, var(--accent) 22%, var(--line)); }
+.sc-icon svg{ width:52%; height:52%; stroke:var(--accent); fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+.sc-badge{ min-width:2.4em; text-align:center; padding:.3em .8em; border-radius:999px; font-size:clamp(11px,1.25vmin,24px); font-weight:700;
+  color:var(--accent); background:var(--accent-soft); border:1px solid color-mix(in srgb, var(--accent) 22%, var(--line)); }
+.sc-body{ flex:1; display:flex; flex-direction:column; gap:.5vmin; }
+.sc-name{ font-size:clamp(17px,1.9vmin,38px); font-weight:700; color:var(--ink); }
+.sc-desc{ font-size:clamp(11px,1.25vmin,25px); color:var(--text-dim); }
+.sc-foot{ display:flex; align-items:center; justify-content:space-between; border-top:1px solid var(--line); padding-top:clamp(10px,1.3vmin,24px); }
+.sc-count{ font-size:clamp(11px,1.3vmin,26px); font-weight:600; color:var(--text-dim); }
+.sc-go{ width:clamp(30px,3.2vmin,60px); aspect-ratio:1; display:grid; place-items:center; border-radius:50%; color:var(--accent); background:var(--surface-2); border:1px solid var(--line); transition:background .2s, color .2s, border-color .2s; }
+.sc-go svg{ width:52%; height:52%; }
+.section-card:hover .sc-go{ background:var(--accent); color:#fff; border-color:var(--accent); }
+
+/* About the Church overlay body */
+.about-body{ overflow-y:auto; padding:clamp(18px,2.6vmin,56px) clamp(22px,3vmin,64px) clamp(24px,3.4vmin,68px); }
+.about-tagline{ font-size:clamp(14px,1.7vmin,34px); font-weight:600; color:var(--accent); }
+.about-facts{ margin:clamp(16px,2.2vmin,44px) 0; display:grid; grid-template-columns:repeat(auto-fit,minmax(24ch,1fr)); gap:clamp(12px,1.5vmin,30px); }
+.about-facts > div{ padding:clamp(12px,1.5vmin,30px) clamp(14px,1.8vmin,34px); background:var(--surface-2); border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:10px; }
+.about-facts dt{ font-size:clamp(9px,1vmin,19px); font-weight:600; letter-spacing:.2em; text-transform:uppercase; color:var(--text-dim); margin-bottom:.5vmin; }
+.about-facts dd{ font-size:clamp(13px,1.5vmin,30px); color:var(--ink); }
+.about-block{ margin-top:clamp(14px,2vmin,40px); }
+.about-block h3{ font-size:clamp(14px,1.6vmin,32px); font-weight:800; color:var(--ink); margin-bottom:.8vmin; }
+.about-block p{ font-size:clamp(13px,1.55vmin,32px); line-height:1.7; color:var(--text); }
+
+/* — top bar (legacy, unused) — */
 .topbar{ display:flex; align-items:center; gap:2vmin; padding:clamp(16px,2.2vmin,46px) clamp(20px,3vmin,72px) 0; }
 .topbar-title{ flex:1; text-align:center; }
 .topbar-title h1{ font-size:clamp(20px, 2.8vmin, 56px); font-weight:800; letter-spacing:.14em; text-indent:.14em; color:var(--ink); }
@@ -584,8 +665,8 @@ input, select{ font-family:inherit; }
 .sr-empty{ padding:2vmin; text-align:center; color:var(--text-dim); font-size:clamp(13px,1.5vmin,28px); }
 
 /* ═══════════════ BROTHER THOMAS FLOATING WIDGET (right) ══════════════ */
-#bt-widget{ position:fixed; right:clamp(18px,2.2vmin,52px); top:58%; translate:0 -50%; z-index:13;
-  width:clamp(70px,6.6vmin,136px); aspect-ratio:1; border:none; background:none; cursor:pointer;
+#bt-widget{ position:fixed; right:clamp(18px,2.4vmin,64px); bottom:clamp(26px,4vmin,96px); top:auto; z-index:13;
+  width:clamp(66px,6.2vmin,128px); aspect-ratio:1; border:none; background:none; cursor:pointer;
   display:grid; place-items:center; animation:btw-float 6s ease-in-out infinite; }
 #bt-widget .btw-core{ position:relative; z-index:2; width:72%; aspect-ratio:1; border-radius:50%; display:grid; place-items:center;
   background:linear-gradient(135deg, var(--accent), var(--accent-2));
@@ -595,9 +676,9 @@ input, select{ font-family:inherit; }
 #bt-widget .btw-ring{ position:absolute; inset:0; border-radius:50%; border:2px solid color-mix(in srgb,var(--accent) 55%,transparent); opacity:0; animation:btw-pulse 2.8s ease-out infinite; }
 #bt-widget .btw-ring2{ animation-delay:1.4s; }
 @keyframes btw-pulse{ 0%{ transform:scale(.75); opacity:.6; } 100%{ transform:scale(1.45); opacity:0; } }
-@keyframes btw-float{ 0%,100%{ translate:0 -50%; } 50%{ translate:0 calc(-50% - .8vmin); } }
+@keyframes btw-float{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-.7vmin); } }
 @keyframes btw-spin{ to{ transform:rotate(360deg); } }
-#bt-widget .btw-label{ position:absolute; bottom:-3.2em; left:50%; translate:-50% 0; z-index:2; width:9em; font-size:clamp(9px,1vmin,19px); font-weight:700; letter-spacing:.08em; line-height:1.2; color:var(--text-dim); text-align:center; white-space:normal; }
+#bt-widget .btw-label{ position:absolute; top:auto; bottom:calc(100% + .3em); left:50%; translate:-50% 0; z-index:2; width:9em; font-size:clamp(9px,1vmin,19px); font-weight:700; letter-spacing:.08em; line-height:1.2; color:var(--text-dim); text-align:center; white-space:normal; }
 #bt-widget:hover .btw-core{ transform:scale(1.08); }
 #bt-widget:active .btw-core{ transform:scale(.92); }
 @media (prefers-reduced-motion:reduce){ #bt-widget, #bt-widget *{ animation:none !important; } }

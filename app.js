@@ -555,6 +555,90 @@ const ORBIT_ANGLES = {
 // Reveal sweeps from the top, one node (icon + its line) at a time.
 const REVEAL_ORDER = { apostle:0, presbyters:1, elders:2, history:3, branches:4, pastors:5, bishops:6 };
 
+/* ══════════════════════════════════════════════════════════════════════
+   HOME SCREEN  ·  hero facts + a grid of ministry cards
+   Replaces the old orbital hub. Everything is one tap away — no reveal.
+   ══════════════════════════════════════════════════════════════════════ */
+const sectionById = (id) => CONTENT.sections.find(s => s.id === id);
+const titleCase = (s) => String(s || "").toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+
+// short descriptor + count badge for each ministry card
+function cardMeta(nav) {
+  if (nav.isBranches) {
+    const countries = CONTENT.branches.reduce((a, r) => a + r.countries.length, 0);
+    return { badge: "Global", count: `${CONTENT.branches.length} regions` };
+  }
+  if (nav.id === "history") return { badge: "Timeline", count: "Our story" };
+  const n = (sectionById(nav.id)?.items || []).filter(i => i.confidence !== "placeholder").length;
+  return { badge: String(n), count: n === 1 ? "1 minister" : `${n} ministers` };
+}
+
+function buildHome() {
+  buildHeroStats();
+  const grid = $("#section-grid"); if (!grid) return;
+  grid.innerHTML = "";
+  NAV.forEach((nav, i) => {
+    const m = cardMeta(nav);
+    const card = document.createElement("button");
+    card.className = "section-card"; card.type = "button";
+    card.dataset.section = nav.id;
+    card.style.animationDelay = `${i * 55}ms`;
+    card.innerHTML =
+      `<span class="sc-top">
+         <span class="sc-icon">${svg(ICONS[nav.icon] || ICONS.history)}</span>
+         <span class="sc-badge">${m.badge}</span>
+       </span>
+       <span class="sc-body">
+         <span class="sc-name">${titleCase(nav.label)}</span>
+         <span class="sc-desc">${titleCase(nav.subtitle || "")}</span>
+       </span>
+       <span class="sc-foot">
+         <span class="sc-count">${m.count}</span>
+         <span class="sc-go"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+       </span>`;
+    card.addEventListener("click", () => { Sound.play("tap"); openSectionCard(nav); });
+    grid.appendChild(card);
+  });
+}
+
+function buildHeroStats() {
+  const el = $("#hero-stats"); if (!el) return;
+  const stats = [
+    { n: "1972",  k: "Founded" },
+    { n: "72+",   k: "Countries" },
+    { n: "1,055", k: "Locale Churches" },
+    { n: "~1M",   k: "Believers" },
+  ];
+  el.innerHTML = stats.map(s => `<div class="stat"><dt>${s.n}</dt><dd>${s.k}</dd></div>`).join("");
+}
+
+// route a card tap to the right existing flow
+function openSectionCard(nav) {
+  if (nav.isBranches) return openGlobe();
+  if (nav.id === "history" || nav.id === "apostle") return openSection(sectionById(nav.id));
+  if (["bishops", "presbyters", "pastors", "elders"].includes(nav.id)) return dirShowCategory(nav.id);
+  return openSection(sectionById(nav.id));
+}
+
+// About-the-church overlay content (from CONTENT.church)
+function buildAbout() {
+  const el = $("#about-body"); if (!el) return;
+  const c = CONTENT.church;
+  const facts = [
+    ["Headquarters", c.headquarters],
+    ["Founded", c.founded],
+    ["Believers", c.members],
+    ["Global Reach", c.countries],
+  ].filter(([, v]) => v);
+  el.innerHTML =
+    `<p class="about-tagline">${esc(c.tagline || "")}</p>
+     <dl class="about-facts">` +
+    facts.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("") +
+    `</dl>
+     <div class="about-block"><h3>The “4th Watch”</h3><p>${esc(c.meaningOf4thWatch || "")}</p></div>
+     <div class="about-block"><h3>What We Believe</h3><p>${esc(c.doctrineSummary || "")}</p></div>`;
+}
+
 function buildOrbit() {
   const nav = $("#orbit-icons"), links = $("#orbit-links");
   nav.innerHTML = ""; links.innerHTML = "";
@@ -586,6 +670,7 @@ function buildOrbit() {
 
 function layoutOrbit() {
   const stage = $("#orbit-stage");
+  if (!stage) return;                       // card-grid home has no orbital stage
   const { width: w, height: h } = stage.getBoundingClientRect();
   if (!w || !h) return;
   const icons = $$(".orbit-icon", stage), groups = $$("#orbit-links g", stage);
@@ -653,6 +738,7 @@ function setOrbit(expand) {
   if (expand === orbitExpanded) return;
   orbitExpanded = expand;
   const stage = $("#orbit-stage");
+  if (!stage) return;                       // card-grid home has no orbital stage
   stage.classList.toggle("expanded", expand);
   const rv = document.getElementById("reveal-stage");   // fade the glow-orbs in with the icons
   if (rv) rv.classList.toggle("revealed", expand);
@@ -2106,8 +2192,9 @@ $("#search-input").addEventListener("input", (e) => runSearch(e.target.value));
 /* ─────────────────── Pinch-to-stretch ("hologram zoom") ──────────────── */
 const zoomBadge = $("#zoom-badge"); let badgeTimer = null;
 function flashZoom(v) { zoomBadge.textContent = `${Math.round(v*100)}%`; zoomBadge.classList.add("show"); clearTimeout(badgeTimer); badgeTimer = setTimeout(() => zoomBadge.classList.remove("show"), 900); }
-function stageZoom() { return parseFloat(getComputedStyle($("#orbit-stage")).getPropertyValue("--zoom")) || 1; }
+function stageZoom() { const s = $("#orbit-stage"); return s ? (parseFloat(getComputedStyle(s).getPropertyValue("--zoom")) || 1) : 1; }
 function makeStretchable(surface, applyZoom, { min = .6, max = 1.8, wheelNeedsCtrl = false } = {}) {
+  if (!surface) return { reset() {} };      // no-op when the surface isn't in the DOM
   let zoom = 1; const pointers = new Map(); let d0 = 0, z0 = 1, lastTap = 0;
   const apply = (z) => { zoom = Math.min(max, Math.max(min, z)); applyZoom(zoom); flashZoom(zoom); };
   surface.addEventListener("pointerdown", (e) => {
@@ -2234,10 +2321,9 @@ function tickClock() {
 /* ───────────────────────── Boot sequence ────────────────────────────── */
 const BOOT = [ [10,"INITIALIZING…"], [30,"LOADING INTERFACE…"], [52,"PREPARING SCENE…"], [74,"SYNCING DIRECTORY…"], [93,"RENDERING NETWORK…"], [100,"WELCOME"] ];
 function boot() {
-  buildOrbit(); buildDock(); buildGallery(); buildSettings();
+  buildHome(); buildDock(); buildGallery(); buildSettings(); buildAbout();
   SEARCH_INDEX = buildSearchIndex();
   applyScene(settings.scene);
-  RevealVideo.init();               // AATF top-view backdrop (first frame at rest)
   tickClock(); setInterval(tickClock, 1000);
   updateMuteButton(); updateJarvisMode();
   let step = 0; const bar = $("#loader-progress"), status = $("#loader-status");
@@ -2624,15 +2710,11 @@ const RevealVideo = {
   },
 };
 
-// Press the PMCC logo → fly the AATF top-view video forward; at the end a
-// warp-glow burst fires and the section icons pop up. Press again → the icons
-// hide and the video reverses back to the top-view first frame.
-$(".hub-core").addEventListener("click", () => {
-  Sound.ensure(); goFullscreen();
-  if (RevealVideo.busy) return;
-  if (orbitExpanded) RevealVideo.collapse();
-  else RevealVideo.expand();
-});
+// Tap the brand logo (top bar) or the hero button → open "About the Church".
+// The first interaction also requests full-screen + primes audio, as before.
+function bindAbout(sel) { const el = $(sel); if (el) el.addEventListener("click", () => { Sound.ensure(); goFullscreen(); openFeature("about"); }); }
+bindAbout("#logo-btn");
+bindAbout("#about-btn");
 $$("[data-close]").forEach(el => el.addEventListener("click", closeOverlay));
 $$("[data-feature-close]").forEach(el => el.addEventListener("click", (e) => closeFeature(e.target.closest(".feature-overlay"))));
 $$("[data-search-close]").forEach(el => el.addEventListener("click", closeSearch));
