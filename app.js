@@ -423,7 +423,8 @@ function updateMuteButton() {
 
 /* ─────────────────────── Background: rain + scene ────────────────────── */
 const Rain = (() => {
-  const c = $("#rain-canvas"), x = c.getContext("2d");
+  const c = $("#rain-canvas"); if (!c) return {};   // no rain layer in the video edition
+  const x = c.getContext("2d");
   let W, H, drops = [];
   function resize() { W = c.width = innerWidth; H = c.height = innerHeight; seed(); }
   function seed() {
@@ -2715,6 +2716,22 @@ const RevealVideo = {
 function bindAbout(sel) { const el = $(sel); if (el) el.addEventListener("click", () => { Sound.ensure(); goFullscreen(); openFeature("about"); }); }
 bindAbout("#logo-btn");
 bindAbout("#about-btn");
+
+// Background video: keep it playing + looping (autoplay may need a nudge).
+const bgVideo = $("#bg-video");
+if (bgVideo) {
+  const playBg = () => { const p = bgVideo.play(); if (p && p.catch) p.catch(() => {}); };
+  bgVideo.muted = true; playBg();
+  bgVideo.addEventListener("canplay", playBg, { once: true });
+  addEventListener("pointerdown", playBg, { once: true });   // fallback if autoplay is blocked
+}
+// Cinema mode: hide every UI element and show only the full-screen video loop.
+function setCinema(on) {
+  document.body.classList.toggle("cinema", on);
+  if (on && bgVideo) { const p = bgVideo.play(); if (p && p.catch) p.catch(() => {}); }
+}
+$("#cinema-btn")?.addEventListener("click", () => { Sound.play("tap"); Sound.ensure(); goFullscreen(); setCinema(true); });
+$("#cinema-exit")?.addEventListener("click", () => { Sound.play("back"); setCinema(false); });
 $$("[data-close]").forEach(el => el.addEventListener("click", closeOverlay));
 $$("[data-feature-close]").forEach(el => el.addEventListener("click", (e) => closeFeature(e.target.closest(".feature-overlay"))));
 $$("[data-search-close]").forEach(el => el.addEventListener("click", closeSearch));
@@ -2777,6 +2794,7 @@ addEventListener("pointerdown", () => { Sound.ensure(); goFullscreen(); }, { onc
 addEventListener("keydown", (e) => { if (e.key === "F11") { e.preventDefault(); document.fullscreenElement ? document.exitFullscreen() : goFullscreen(); } });
 addEventListener("keydown", (e) => {
   if (e.key === "Escape") {
+    if (document.body.classList.contains("cinema")) return setCinema(false);
     if (!$("#profile-modal").classList.contains("hidden")) return closeProfile();
     if (!$("#icon-menu").classList.contains("hidden")) return closeIconMenu();
     if (!$("#dir-dropdown").classList.contains("hidden")) return closeDirDropdown();
