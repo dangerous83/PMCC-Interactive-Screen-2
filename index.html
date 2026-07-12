@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<!-- ==========================================================================
+     PMCC 4TH WATCH — INTERACTIVE LEADERSHIP DIRECTORY  (Glass / rainy edition)
+     Designed for an 85-inch landscape touch screen (16:9, 4K-friendly).
+
+     HOW TO CUSTOMIZE
+     ────────────────
+     • LOGO ............ replace  assets/logo.png            (square PNG, transparent bg)
+     • BACKGROUND ...... drop your photo at  assets/background.jpg  — it is used
+                         automatically. You can also switch scenes live from the
+                         in-app  MENU ▸ GALLERY.  (Built-in CSS scenes need no files.)
+     • ALL TEXT ........ edit  app.js → CONTENT  (names, positions, descriptions…)
+     • BRANCHES ........ edit  app.js → BRANCHES  (regions and countries)
+     • SOUNDS .......... built-in synthesized UI sounds work offline with no files.
+                         To use your own audio files, see app.js → SOUND_FILES.
+     • JARVIS NAME ..... edit  app.js → ASSISTANT_NAME  (currently "Brother Thomas")
+
+     KIOSK TIP: open in Chrome/Edge and press F11 for fullscreen,
+     or launch with:  chrome --kiosk index.html
+     ========================================================================== -->
+<title>PMCC 4th Watch — Leadership Directory</title>
+<link rel="icon" href="assets/logo.png">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- ══════════════════════ AMBIENT BACKGROUND ══════════════════════ -->
+  <!-- Layered rainy-city scene. #bg-photo shows assets/background.jpg (or a
+       Gallery choice) when available; the CSS scene layers sit behind it so
+       the app never looks empty even with no photo. -->
+  <div id="bg-scene" aria-hidden="true">
+    <div class="bg-sky"></div>
+    <div class="bg-rays"></div>     <!-- slow rotating light rays -->
+    <div class="bg-buildings"></div>
+    <div class="bg-bokeh"></div>
+    <canvas id="rain-canvas"></canvas>
+    <div class="bg-fog"></div>
+    <div id="bg-photo"></div>       <!-- user photo layer, set by app.js -->
+    <div class="bg-aurora"></div>   <!-- slow drifting colour glow -->
+    <div class="bg-grid"></div>     <!-- soft animated tech grid -->
+    <div class="bg-tint"></div>
+    <div class="bg-perspective"></div><!-- hi-tech perspective floor grid (above tint) -->
+    <div class="bg-scan"></div>     <!-- subtle scan sweep -->
+    <canvas id="ambient-canvas"></canvas><!-- drifting particles + light streaks -->
+  </div>
+
+  <!-- ════════════════ AATF TOP-VIEW REVEAL VIDEO ════════════════
+       Full-screen backdrop (above the CSS scene, below the UI). At rest it
+       holds the first frame — the top view. Tapping the logo flies it forward
+       and the icons pop up (with a warp-glow burst at the end); tapping again
+       reverses it back to the top view. src is set by app.js (cache-busted). -->
+  <div id="reveal-stage" aria-hidden="true">
+    <video id="reveal-video" muted playsinline preload="auto"></video>
+    <div id="reveal-vignette"></div>
+  </div>
+  <div id="warp-burst" aria-hidden="true"></div>
+
+  <!-- ════════════════════════ LOADING SCREEN ════════════════════════ -->
+  <div id="loader">
+    <div class="loader-logo-wrap">
+      <div class="loader-ring ring-a"></div>
+      <div class="loader-ring ring-b"></div>
+      <img class="loader-logo" src="assets/logo.png" alt="Church logo">
+    </div>
+    <div class="loader-title">
+      <h1>PENTECOSTAL MISSIONARY CHURCH OF CHRIST</h1>
+      <p>4TH WATCH &nbsp;•&nbsp; LEADERSHIP DIRECTORY</p>
+    </div>
+    <div class="loader-bar"><span id="loader-progress"></span></div>
+    <p class="loader-status" id="loader-status">INITIALIZING…</p>
+  </div>
+
+  <!-- ════════════════════════ MAIN DASHBOARD ════════════════════════ -->
+  <main id="dashboard" class="hidden" aria-label="Main directory dashboard">
+
+    <!-- Top bar: centered title (clock/date sit in the bottom status bar) -->
+    <header class="topbar">
+      <div class="topbar-title">
+        <h1>PMCC <span>4TH WATCH</span></h1>
+        <p>LEADERSHIP &amp; MINISTRY DIRECTORY</p>
+      </div>
+    </header>
+
+    <!-- Center hub + draggable node icons. Icons start hidden behind the logo;
+         TAP THE LOGO to expand the network. Drag an icon to move it; long-press
+         (hold) an icon to focus + open it. -->
+    <div id="orbit-stage">
+      <svg id="orbit-links" aria-hidden="true"></svg>
+      <div class="hub">
+        <div class="hub-ring hub-ring-1"></div>
+        <div class="hub-ring hub-ring-2"></div>
+        <div class="hub-core">
+          <img src="assets/logo.png" alt="Church logo" draggable="false">
+        </div>
+      </div>
+      <nav id="orbit-icons" aria-label="Directory sections"><!-- injected by app.js --></nav>
+    </div>
+
+    <!-- Bottom status strip: clock (left) · date (right) -->
+    <footer class="statusbar">
+      <span id="hud-clock">--:--</span>
+      <span id="hud-date">—</span>
+    </footer>
+
+    <!-- Bottom-center icon DOCK (replaces the old slide-out menu).
+         Buttons injected by app.js → buildDock(). -->
+    <div class="dock-wrap">
+      <p class="hud-hint" id="hud-hint">TAP THE LOGO TO BEGIN</p>
+      <nav id="dock" aria-label="Menu"></nav>
+    </div>
+
+    <!-- ══════════ EVENTS · left HUD widget (Iron-Man style) ══════════
+         A small square that expands into a holographic monitor panel. -->
+    <aside id="events-widget" class="events-widget collapsed">
+      <button class="ew-toggle" type="button" aria-expanded="false" aria-label="Events">
+        <span class="ew-scan" aria-hidden="true"></span>
+        <span class="ew-toggle-ico">
+          <svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4M7.5 13h3M13.5 13h3M7.5 16.5h3M13.5 16.5h3" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+        </span>
+        <span class="ew-toggle-label">EVENTS</span>
+      </button>
+      <div class="ew-panel" role="region" aria-label="Church events">
+        <div class="ew-frame" aria-hidden="true"></div>
+        <header class="ew-head">
+          <span class="ew-dot"></span>
+          <span class="ew-title">EVENTS</span>
+          <span class="ew-sub">PMCC · LIVE FEED</span>
+        </header>
+        <ul class="ew-list">
+          <li><button class="ew-item" type="button" data-ev="Home Free">
+            <span class="ew-ico"><svg viewBox="0 0 24 24"><path d="M4 11l8-6 8 6M6 10v9h12v-9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 19v-5h4v5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></span>
+            <span class="ew-tx"><b>Home Free</b><small>Fellowship gathering</small></span>
+            <span class="ew-chev">›</span>
+          </button></li>
+          <li><button class="ew-item" type="button" data-ev="Anniversaries">
+            <span class="ew-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4.6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8.6 12.6 7.5 21l4.5-2.7L16.5 21l-1.1-8.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></span>
+            <span class="ew-tx"><b>Anniversaries</b><small>Church milestones</small></span>
+            <span class="ew-chev">›</span>
+          </button></li>
+          <li><button class="ew-item" type="button" data-ev="Christmas">
+            <span class="ew-ico"><svg viewBox="0 0 24 24"><path d="M12 3 6.5 11h3L5 18h14l-4.5-7h3z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M10.5 18h3v3h-3z" fill="none" stroke="currentColor" stroke-width="1.7"/></svg></span>
+            <span class="ew-tx"><b>Christmas</b><small>Season celebrations</small></span>
+            <span class="ew-chev">›</span>
+          </button></li>
+          <li><button class="ew-item" type="button" data-ev="Blogs">
+            <span class="ew-ico"><svg viewBox="0 0 24 24"><path d="M5 4h9l5 5v11H5z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M14 4v5h5M8 13h8M8 16.5h5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+            <span class="ew-tx"><b>Blogs</b><small>Latest articles</small></span>
+            <span class="ew-chev">›</span>
+          </button></li>
+        </ul>
+      </div>
+    </aside>
+  </main>
+
+  <!-- ════════════════════════ SECTION PANEL ════════════════════════ -->
+  <!-- Reusable overlay for leadership sections. Icon glyph (no photos for now). -->
+  <section id="panel" class="hidden" aria-modal="true" role="dialog">
+    <div class="panel-backdrop" data-close></div>
+    <div class="panel-shell">
+      <header class="panel-head">
+        <button class="btn-back" data-close aria-label="Back to dashboard">
+          <svg viewBox="0 0 24 24"><path d="M15 5 L8 12 L15 19" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>BACK</span>
+        </button>
+        <div class="panel-title-wrap">
+          <h2 id="panel-title">SECTION</h2>
+          <p id="panel-subtitle">—</p>
+        </div>
+        <button class="panel-x" data-close aria-label="Close">
+          <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+      </header>
+
+      <div class="panel-body">
+        <!-- Icon / visual area (placeholder glyph instead of a photo) -->
+        <figure class="panel-media">
+          <div class="media-frame">
+            <div id="panel-glyph" class="media-glyph"><svg viewBox="0 0 24 24"></svg></div>
+            <div class="media-scanline" aria-hidden="true"></div>
+          </div>
+          <figcaption id="panel-caption">—</figcaption>
+          <div id="panel-thumbs" class="panel-thumbs hidden" aria-label="Gallery images"></div>
+        </figure>
+
+        <!-- Profile / content area -->
+        <article class="panel-content">
+          <h3 id="detail-name">—</h3>
+          <p id="detail-position" class="detail-position">—</p>
+          <div class="detail-divider" aria-hidden="true"></div>
+          <p id="detail-description">—</p>
+          <dl id="detail-extra" class="detail-extra"></dl>
+        </article>
+      </div>
+
+      <footer id="panel-list" class="panel-list" aria-label="Entries"></footer>
+    </div>
+  </section>
+
+  <!-- ════════════════ LIGHTBOX (zoomable image preview) ═══════════════ -->
+  <section id="lightbox" class="lightbox hidden" aria-modal="true" role="dialog" aria-label="Image preview">
+    <div class="lb-backdrop" data-lb-close></div>
+    <button class="lb-x" data-lb-close aria-label="Close preview">
+      <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+    <button class="lb-nav lb-prev" aria-label="Previous image">
+      <svg viewBox="0 0 24 24"><path d="M15 5 L8 12 L15 19" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <button class="lb-nav lb-next" aria-label="Next image">
+      <svg viewBox="0 0 24 24"><path d="M9 5 L16 12 L9 19" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div id="lb-stage" class="lb-stage">
+      <img id="lb-img" class="lb-img" alt="" draggable="false">
+    </div>
+    <span id="lb-counter" class="lb-counter hidden">1 / 1</span>
+    <div class="lb-tools" role="group" aria-label="Zoom controls">
+      <button data-lb-zoom="out" aria-label="Zoom out">−</button>
+      <span id="lb-zoom-val">100%</span>
+      <button data-lb-zoom="in" aria-label="Zoom in">+</button>
+      <button data-lb-zoom="reset" aria-label="Reset zoom">Reset</button>
+    </div>
+    <p class="lb-hint">Scroll, pinch or double-tap to zoom · drag to pan · ‹ › to browse</p>
+  </section>
+
+  <!-- ════════════════ BRANCHES PANEL (regions ▸ countries) ═══════════ -->
+  <section id="branches-panel" class="hidden" aria-modal="true" role="dialog">
+    <div class="panel-backdrop" data-close></div>
+    <div class="panel-shell wide">
+      <header class="panel-head">
+        <button class="btn-back" data-close aria-label="Back to dashboard">
+          <svg viewBox="0 0 24 24"><path d="M15 5 L8 12 L15 19" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>BACK</span>
+        </button>
+        <div class="panel-title-wrap">
+          <h2>BRANCHES</h2>
+          <p>GLOBAL CONGREGATIONS</p>
+        </div>
+        <button class="panel-x" data-close aria-label="Close">
+          <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+      </header>
+      <div id="regions-grid" class="regions-grid"><!-- injected by app.js --></div>
+    </section>
+  </section>
+
+  <!-- ════════════════════════ GALLERY OVERLAY ════════════════════════ -->
+  <section id="gallery" class="feature-overlay hidden" aria-modal="true" role="dialog">
+    <div class="feature-backdrop" data-feature-close></div>
+    <div class="feature-shell">
+      <header class="feature-head">
+        <h2>GALLERY</h2><p>Choose a background scene</p>
+        <button class="feature-x" data-feature-close aria-label="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+      </header>
+      <div id="gallery-grid" class="gallery-grid"><!-- injected --></div>
+      <p class="feature-note">Tip: drop your own photo at <code>assets/background.jpg</code> and pick “My Photo”.</p>
+    </div>
+  </section>
+
+  <!-- ════════════════════════ SETTINGS OVERLAY ═══════════════════════ -->
+  <section id="settings" class="feature-overlay hidden" aria-modal="true" role="dialog">
+    <div class="feature-backdrop" data-feature-close></div>
+    <div class="feature-shell">
+      <header class="feature-head">
+        <h2>SETTINGS</h2><p>Personalize the interface</p>
+        <button class="feature-x" data-feature-close aria-label="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+      </header>
+      <div class="settings-body">
+        <div class="set-group">
+          <h3>Credentials</h3>
+          <label>Username<input id="set-user" type="text" autocomplete="off" placeholder="username"></label>
+          <label>Password<input id="set-pass" type="password" autocomplete="off" placeholder="••••••••"></label>
+        </div>
+        <div class="set-group">
+          <h3>Sound &amp; Voice</h3>
+          <label>Volume <span id="vol-val">70%</span>
+            <input id="set-vol" type="range" min="0" max="100" value="70">
+          </label>
+          <label>Brother Thomas voice
+            <select id="set-voice"><option value="">Automatic — best natural male</option></select>
+          </label>
+          <div class="update-row">
+            <span class="set-hint">Pick the voice you like, then preview it.</span>
+            <button id="btn-voice-test" class="pill" type="button">Preview voice</button>
+          </div>
+        </div>
+        <div class="set-group">
+          <h3>Theme · Background</h3>
+          <div id="scene-grid" class="scene-grid"><!-- injected --></div>
+        </div>
+        <div class="set-group">
+          <h3>Accent Color</h3>
+          <div id="color-swatches" class="swatches"><!-- injected --></div>
+        </div>
+        <div class="set-group">
+          <h3>Interface Scheme</h3>
+          <p class="set-hint">Choose an interface &amp; icon design — 10 styles.</p>
+          <div id="scheme-opts" class="scheme-grid"><!-- injected --></div>
+        </div>
+        <div class="set-group">
+          <h3>Assistant · Brother Thomas (OpenJarvis)</h3>
+          <label class="switch-row">
+            <span>Use local OpenJarvis AI</span>
+            <input id="set-jarvis-enabled" type="checkbox">
+            <span class="switch"></span>
+          </label>
+          <label>API endpoint<input id="set-jarvis-endpoint" type="text" spellcheck="false" autocomplete="off" placeholder="http://localhost:8000/v1/chat/completions"></label>
+          <label>Model (optional)<input id="set-jarvis-model" type="text" spellcheck="false" autocomplete="off" placeholder="e.g. qwen3:8b — leave blank for the server default"></label>
+          <div class="update-row">
+            <span id="jarvis-test-status">Not tested</span>
+            <button id="btn-jarvis-test" class="pill" type="button">Test connection</button>
+          </div>
+          <p class="set-hint">Run <code>jarvis serve --port 8000</code> on this PC. If the kiosk page isn't served from an OpenJarvis-allowed origin, add it to the server's <code>server.cors_origins</code> (or serve the kiosk on <code>localhost:5173</code>, which is allowed by default).</p>
+        </div>
+        <div class="set-group">
+          <h3>Updates</h3>
+          <div class="update-row">
+            <span id="update-status">You’re up to date · v2.0</span>
+            <button id="btn-update" class="pill">Check for updates</button>
+          </div>
+        </div>
+        <div class="set-actions">
+          <button id="btn-save-settings" class="pill primary">Save</button>
+          <button id="btn-reset-settings" class="pill">Reset</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════ SETTINGS LOCK (password gate) ══════════════════ -->
+  <section id="settings-lock" class="feature-overlay hidden" aria-modal="true" role="dialog">
+    <div class="feature-backdrop" data-feature-close></div>
+    <div class="feature-shell lock-shell">
+      <header class="feature-head">
+        <div><h2>SETTINGS LOCKED</h2><p>Authorized access only</p></div>
+        <button class="feature-x" data-feature-close aria-label="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+      </header>
+      <form id="lock-form" class="lock-body">
+        <div class="lock-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="9.5" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="15" r="1.4" fill="currentColor"/></svg>
+        </div>
+        <label>Password<input id="lock-pass" type="password" autocomplete="off" spellcheck="false" placeholder="••••••••"></label>
+        <p id="lock-msg" class="lock-msg"></p>
+        <button id="lock-go" class="pill primary" type="submit">Unlock Settings</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- ═══════════════════ JARVIS / BROTHER THOMAS OVERLAY ══════════════ -->
+  <section id="jarvis" class="feature-overlay hidden" aria-modal="true" role="dialog">
+    <div class="feature-backdrop" data-feature-close></div>
+    <div class="feature-shell tall jarvis-shell">
+      <header class="feature-head">
+        <div class="jarvis-orb" aria-hidden="true"><span></span></div>
+        <div><h2 id="jarvis-name">BROTHER THOMAS</h2><p id="jarvis-mode"><span id="jarvis-dot" class="j-dot"></span>Ready</p></div>
+        <!-- voice toggle: Brother Thomas speaks his replies aloud when on -->
+        <button id="jarvis-voice" class="pill jv-toggle" type="button" title="Voice on/off" aria-label="Toggle voice">
+          <svg viewBox="0 0 24 24"><path d="M12 3.5a3 3 0 0 1 3 3v5a3 3 0 0 1-6 0v-5a3 3 0 0 1 3-3z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M6.5 11.5a5.5 5.5 0 0 0 11 0M12 17v3.5M9 20.5h6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <span id="jarvis-voice-label">VOICE ON</span>
+        </button>
+        <button class="feature-x" data-feature-close aria-label="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+      </header>
+
+      <!-- Two-column layout: LEFT = his living voice animation, RIGHT = the chat box -->
+      <div class="jarvis-body">
+        <!-- LEFT · animated presence + hi-tech voice waveform (moves when he speaks).
+             In Voice Mode this fills the whole panel and the chat text is hidden. -->
+        <div class="jarvis-stage">
+          <div class="jarvis-core">
+            <span class="jc-ring jc-ring-1"></span>
+            <span class="jc-ring jc-ring-2"></span>
+            <span class="jc-ring jc-ring-3"></span>
+            <span class="jc-glow"></span>
+          </div>
+          <div class="jarvis-wave-wrap">
+            <canvas id="jarvis-wave"></canvas>
+          </div>
+          <span class="jw-state" id="jarvis-wave-state">STANDBY</span>
+          <!-- Voice-mode controls (only visible in the waveform-only view) -->
+          <div class="voice-controls">
+            <button id="voice-mic" class="voice-mic" type="button" aria-label="Toggle microphone">
+              <svg viewBox="0 0 24 24"><path d="M12 3.5a3 3 0 0 1 3 3v5a3 3 0 0 1-6 0v-5a3 3 0 0 1 3-3z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M6.5 11.5a5.5 5.5 0 0 0 11 0M12 17v3.5M9 20.5h6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </button>
+            <button id="voice-type" class="voice-type" type="button">⌨ Type instead</button>
+          </div>
+        </div>
+
+        <!-- RIGHT · the conversation + input -->
+        <div class="jarvis-chat">
+          <div id="jarvis-log" class="jarvis-log"></div>
+          <form id="jarvis-form" class="jarvis-input">
+            <input id="jarvis-text" type="text" autocomplete="off" placeholder="Ask Brother Thomas…">
+            <button id="jarvis-mic" type="button" class="pill mic" title="Speak — or say “Brother Thomas”" aria-label="Microphone">
+              <svg viewBox="0 0 24 24"><path d="M12 3.5a3 3 0 0 1 3 3v5a3 3 0 0 1-6 0v-5a3 3 0 0 1 3-3z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M6.5 11.5a5.5 5.5 0 0 0 11 0M12 17v3.5M9 20.5h6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </button>
+            <button type="submit" class="pill primary" aria-label="Send">
+              <svg viewBox="0 0 24 24"><path d="M4 12l16-8-6 8 6 8z" fill="currentColor"/></svg>
+            </button>
+          </form>
+          <!-- clear voice status: turns into "Listening… speak now" when the mic is live -->
+          <p id="mic-hint" class="mic-hint">🎙️ Tap the mic and speak — or just say “Brother Thomas”.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════ BROWSER OVERLAY ════════════════════════ -->
+  <section id="browser" class="feature-overlay hidden" aria-modal="true" role="dialog">
+    <div class="feature-backdrop" data-feature-close></div>
+    <div class="feature-shell full">
+      <header class="browser-bar">
+        <button class="feature-x" data-feature-close aria-label="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+        <form id="browser-form" class="browser-addr">
+          <span class="lock" aria-hidden="true">🔒</span>
+          <input id="browser-url" type="text" spellcheck="false" value="https://pmcc4thwatch.org/">
+          <button type="submit" class="pill">Go</button>
+        </form>
+        <button id="browser-newtab" class="pill" title="Open in a new tab">Open ↗</button>
+      </header>
+      <div class="browser-view">
+        <iframe id="browser-frame" title="In-app browser" referrerpolicy="no-referrer"></iframe>
+        <div id="browser-fallback" class="browser-fallback hidden">
+          <p>This page can’t be shown inside the kiosk browser (the site blocks embedding, or this display is offline).</p>
+          <button id="browser-open2" class="pill primary">Open in a new tab ↗</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════ DIRECTORY: category dropdown (popover) ════════════ -->
+  <!-- Flow: DIRECTORY dock icon → this dropdown → name list → profile modal.
+       Items injected by app.js → buildDirDropdown(). -->
+  <div id="dir-dropdown" class="dir-dropdown hidden" role="menu" aria-label="Directory categories"></div>
+
+  <!-- Per-icon name dropdown: clicking a leadership orbit icon lists its names -->
+  <div id="icon-menu" class="icon-menu hidden" role="menu" aria-label="Names"></div>
+
+  <!-- ══════════════ DIRECTORY: name-list overlay ══════════════════════ -->
+  <section id="directory" class="feature-overlay hidden" aria-modal="true" role="dialog">
+    <div class="feature-backdrop" data-feature-close></div>
+    <div class="feature-shell tall">
+      <header class="feature-head">
+        <button id="dir-back" class="pill" type="button" aria-label="Back to categories">
+          <svg viewBox="0 0 24 24"><path d="M15 5 L8 12 L15 19" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Categories
+        </button>
+        <div><h2 id="dir-title">DIRECTORY</h2><p id="dir-sub">Select a name</p></div>
+        <button class="feature-x" data-feature-close aria-label="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+      </header>
+      <div id="dir-list" class="dir-list"><!-- names injected by app.js --></div>
+    </div>
+  </section>
+
+  <!-- ══════════════ DIRECTORY: profile modal + accordion ══════════════ -->
+  <!-- Layout: LARGE portrait photo on the left, name + accordion on the right. -->
+  <section id="profile-modal" class="hidden" aria-modal="true" role="dialog">
+    <div class="pm-backdrop" data-pm-close></div>
+    <div class="pm-shell">
+      <button class="pm-x" data-pm-close aria-label="Close profile">
+        <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+      <div class="pm-body">
+        <aside class="pm-photo-col">
+          <div id="pm-portrait" class="pm-portrait"></div>
+          <h2 id="pm-name">Name</h2>
+          <p id="pm-title" class="pm-title">Title</p>
+          <div id="pm-meta" class="pm-meta"></div>
+        </aside>
+        <div class="pm-main-col">
+          <div id="profile-accordion" class="pm-accordion"><!-- sections injected --></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════ BRANCHES: interactive rotating globe ══════════════ -->
+  <section id="globe" class="feature-overlay hidden" aria-modal="true" role="dialog">
+    <div class="feature-backdrop" data-feature-close></div>
+    <div class="feature-shell full">
+      <header class="feature-head">
+        <div><h2>BRANCHES</h2><p>Global congregations · tap a glowing point or search</p></div>
+        <form id="globe-search-form" class="globe-search">
+          <input id="globe-search" type="text" autocomplete="off" spellcheck="false" placeholder="Search a country…">
+        </form>
+        <button class="feature-x" data-feature-close aria-label="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+      </header>
+      <div class="globe-body">
+        <aside id="globe-info" class="globe-info"></aside>
+        <div class="globe-stage"><canvas id="globe-canvas"></canvas></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════ SEARCH OVERLAY ═════════════════════════ -->
+  <!-- Center modal; blurs everything behind so focus is on the search bar. -->
+  <section id="search" class="hidden" aria-modal="true" role="dialog">
+    <div class="search-backdrop" data-search-close></div>
+    <div class="search-box">
+      <div class="search-field">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M16 16l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <input id="search-input" type="text" autocomplete="off" placeholder="Search leaders, branches, sections…">
+        <button data-search-close class="feature-x" aria-label="Close search"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+      </div>
+      <ul id="search-results" class="search-results"></ul>
+    </div>
+  </section>
+
+  <!-- Cyber-style transition overlay: scan sweep + expanding ring + flash
+       played when an icon is opened. Driven by app.js → runCyberFX(). -->
+  <div id="cyber-fx" aria-hidden="true">
+    <div class="fx-flash"></div>
+    <div class="fx-scan"></div>
+    <div class="fx-ring"></div>
+    <div class="fx-grid"></div>
+  </div>
+
+  <!-- ════════════ PMCC LOGO · ADVANCED-AI / CYBERSECURITY REVEAL ═══════════
+       Full-screen, high-impact reveal played when the center PMCC logo is
+       pressed. Scanning hex grid, sweeping rings, a boot log of "systems
+       online", a glitch flash — then the network reveals. Driven by
+       app.js → CyberReveal.run(). -->
+  <div id="cyber-reveal" aria-hidden="true">
+    <canvas id="cr-canvas"></canvas>
+    <div class="cr-scanline"></div>
+    <div class="cr-vignette"></div>
+    <div class="cr-center">
+      <div class="cr-rings">
+        <span class="cr-ring cr-ring-1"></span>
+        <span class="cr-ring cr-ring-2"></span>
+        <span class="cr-ring cr-ring-3"></span>
+        <span class="cr-reticle"></span>
+      </div>
+      <img class="cr-logo" src="assets/logo.png" alt="" draggable="false">
+      <div class="cr-title">P M C C &nbsp; 4 T H &nbsp; W A T C H</div>
+      <div class="cr-sub">SECURE&nbsp;·&nbsp;INTELLIGENT&nbsp;·&nbsp;INTERACTIVE</div>
+      <ul class="cr-boot" id="cr-boot"></ul>
+    </div>
+    <div class="cr-flash"></div>
+  </div>
+
+  <!-- ════════════════════ ON-SCREEN DIGITAL KEYBOARD ═════════════════════
+       Touch keyboard for the kiosk — appears when a text field is focused
+       (Brother Thomas, search, browser address, settings, globe search).
+       Built + driven by app.js → Keyboard. -->
+  <div id="osk" class="osk hidden" role="group" aria-label="On-screen keyboard">
+    <div class="osk-bar">
+      <span class="osk-title">DIGITAL KEYBOARD</span>
+      <button class="osk-hide" id="osk-hide" type="button" aria-label="Hide keyboard">HIDE ▾</button>
+    </div>
+    <div class="osk-keys" id="osk-keys"><!-- keys injected by app.js --></div>
+  </div>
+
+  <!-- Floating BROTHER THOMAS assistant widget (right side, always looping) -->
+  <button id="bt-widget" aria-label="Ask Brother Thomas" title="Ask Brother Thomas">
+    <span class="btw-ring"></span>
+    <span class="btw-ring btw-ring2"></span>
+    <span class="btw-core">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3"/><path d="M12 3.5v3M12 17.5v3M3.5 12h3M17.5 12h3"/></svg>
+    </span>
+    <span class="btw-label">BROTHER<br>THOMAS</span>
+  </button>
+
+  <!-- Zoom readout: flashes while pinch-stretching the dashboard or a panel -->
+  <div id="zoom-badge" aria-hidden="true">100%</div>
+  <!-- Toast for small confirmations (saved, updated…) -->
+  <div id="toast" class="hidden"></div>
+
+<script src="assets/world-land.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
