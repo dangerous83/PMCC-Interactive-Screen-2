@@ -34,11 +34,9 @@ or open the file normally and press **F11** for fullscreen.
 The home screen is a straightforward directory — no gestures to learn:
 
 - **App bar** (top): the church logo/wordmark on the left, a live clock and date
-  on the right. **Tap the logo** (or the **About the Church** button) to open a
-  clean panel with the church's facts, the meaning of the “4th Watch”, and its
-  beliefs.
-- **Welcome hero**: the church name, tagline, and key stats (founded, countries,
-  locale churches, believers).
+  on the right. **Tap the logo** to open a clean **About the Church** panel with
+  the church's facts (headquarters, founding, reach, believers), the meaning of
+  the “4th Watch”, and its beliefs.
 - **Ministry cards**: an always-visible grid — Apostle · Bishops · Presbyters ·
   Pastors · Elders · Branches · History. **Tap a card** to open it. Leadership
   cards open a tappable name list → profile; Branches opens the interactive
@@ -101,8 +99,8 @@ No photos are used for people right now — each entry shows a soft-glow icon gl
 
 ## Dashboard layout & interactions
 
-The dashboard is a clean **card directory**: a welcome hero with the church's
-key facts, then a responsive grid of ministry cards — **Apostle · Bishops ·
+The dashboard is a clean **card directory** laid over the video background: a
+responsive grid of ministry cards — **Apostle · Bishops ·
 Presbyters · Pastors · Elders · Branches · History** — each showing its icon, a
 count, and a short descriptor. Everything is visible at once and one tap away;
 there is no hidden “reveal” step.
