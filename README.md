@@ -1,8 +1,13 @@
 # PMCC 4th Watch — Interactive Leadership Directory
 
-A futuristic **glassmorphic** touch-screen directory for an **85-inch landscape
-display** (16:9, 4K-friendly). Pure HTML/CSS/JavaScript — no build step, no
-backend, works fully **offline** once opened in a browser.
+A clean, **corporate, light-themed** touch-screen directory for an **85-inch
+landscape display** (16:9, 4K-friendly). Pure HTML/CSS/JavaScript — no build
+step, no backend, works fully **offline** once opened in a browser.
+
+The interface uses a professional white design system: soft neutral surfaces,
+crisp hairline borders, gentle shadows (no glows), a single editable **corporate
+accent** colour, and clear, legible typography — designed to read as calm and
+trustworthy on a large public display.
 
 ## Run it
 
@@ -27,7 +32,7 @@ or open the file normally and press **F11** for fullscreen.
 ## How to use it (touch gestures)
 
 - **Tap the center logo** to reveal the organized grid of section icons; tap again to collapse.
-- **Tap or press-and-hold** an icon to open its section — opening plays an elegant golden bloom transition with a soft chime.
+- **Tap or press-and-hold** an icon to open its section — opening plays a subtle, professional transition with a soft chime.
 - **Pinch** the dashboard to stretch the whole network; pinch inside a panel to enlarge the text. Double-tap empty space to reset. (Mouse: wheel = dashboard zoom, Ctrl+wheel = panel zoom.)
 - **Bottom dock** (icons, centered) holds: Home · Gallery · Settings · Brother Thomas · Browser · Search · Sound (mute).
 - **Search** (dock, or Ctrl/⌘-K) pops up centered and blurs everything to focus the search bar.
@@ -35,15 +40,16 @@ or open the file normally and press **F11** for fullscreen.
 
 ## Brand & background
 
-The interface uses a **royal navy + gold** palette drawn from the PMCC 4th
-Watch logo (navy · gold · red · white). The background is a **living hi-tech
-scene**: a twinkling starfield, a slow-rotating light-ray fan behind the logo, a
-drifting navy/gold aurora, a soft tech grid, a receding perspective "floor"
-grid, and a gentle scan sweep — all pure CSS/canvas. The app also ships with a
-matching navy-and-gold "Signature" background at `assets/background.jpg`. **To use your own photo, just overwrite that file** (any 16:9 image),
-or pick a different look from **Gallery** (Royal Night, Golden Aura, Deep Navy,
-Emerald Court, Crimson Royal — all need no image file). Change the gold accent
-to another color in **Settings ▸ Accent Color**.
+The interface uses a **clean corporate palette**: a white canvas with a very
+subtle blueprint grid, neutral slate text, and a single **corporate-blue
+accent** (the default). The background is calm and static by design — no
+animated rain, aurora, or scan effects — so the content stays the focus. The app
+ships with a light **Clean White** background by default; pick a different light
+scene from **Gallery** (Cool Mist, Light Slate, Soft Azure, Pale Sky, Warm Sand,
+Fresh Mint, Pearl Grey, Soft Linen — all need no image file), or drop your own
+photo at `assets/background.jpg` and choose **Signature**. Change the accent to
+another professional colour (Navy, Indigo, Teal, Emerald, Sky, Slate, Amber,
+Rose, Violet) in **Settings ▸ Accent Color**.
 
 ## The dock features
 

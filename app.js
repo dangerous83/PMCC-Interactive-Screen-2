@@ -1,5 +1,5 @@
 /* ==========================================================================
-   PMCC 4TH WATCH — LEADERSHIP DIRECTORY  ·  APP LOGIC  (Glass / rainy edition)
+   PMCC 4TH WATCH — LEADERSHIP DIRECTORY  ·  APP LOGIC  (Corporate / light edition)
    ==========================================================================
 
    ┌──────────────────────────────────────────────────────────────────────┐
@@ -250,47 +250,47 @@ const CONTENT = {
 /* ═══════════════════ 4. GALLERY SCENES (backgrounds) ══════════════════ */
 /* Built-in CSS scenes need no image files. "photo" points at your own file. */
 const SCENES = [
-  { id: "photo",   label: "Signature",     type: "photo", src: "assets/background.jpg" }, // ships by default
-  { id: "royal",   label: "Royal Night",   type: "scene" },                                // CSS navy-gold fallback
-  { id: "golden",  label: "Golden Aura",   type: "css", css: "radial-gradient(circle at 50% 42%, #3a3212 0%, #14265e 42%, #05091a 82%)" },
-  { id: "deep",    label: "Deep Navy",     type: "css", css: "radial-gradient(circle at 50% 40%, #17285f, #060b20 72%)" },
-  { id: "emerald", label: "Emerald Court", type: "css", css: "radial-gradient(circle at 50% 42%, #123f34, #06231d 55%, #04101a 85%)" },
-  { id: "crimson", label: "Crimson Royal", type: "css", css: "radial-gradient(circle at 50% 40%, #4a1622, #1a0a1e 60%, #05091a 90%)" },
-  { id: "aurora",  label: "Aurora",        type: "css", css: "radial-gradient(circle at 30% 30%, #0b3a52 0%, #10254f 40%, #06091f 85%)" },
-  { id: "nebula",  label: "Violet Nebula", type: "css", css: "radial-gradient(circle at 60% 35%, #35204f, #171238 45%, #05071c 85%)" },
-  { id: "cyber",   label: "Cyber Grid",    type: "css", css: "radial-gradient(circle at 50% 45%, #05343f, #062036 55%, #04101a 88%)" },
-  { id: "space",   label: "Deep Space",    type: "css", css: "radial-gradient(circle at 50% 38%, #101a34, #070b1c 60%, #02040d 92%)" },
-  { id: "sunset",  label: "Sunset Ember",  type: "css", css: "radial-gradient(circle at 50% 42%, #4a2a1a, #23153a 55%, #060a1e 90%)" },
+  { id: "clean",   label: "Clean White",   type: "css", css: "linear-gradient(180deg, #f8fafd 0%, #eef2f8 100%)" }, // corporate default
+  { id: "photo",   label: "Signature",     type: "photo", src: "assets/background.jpg" },                            // optional photo
+  { id: "mist",    label: "Cool Mist",     type: "css", css: "radial-gradient(120% 90% at 50% 8%, #ffffff 0%, #e9eef6 60%, #dfe6f0 100%)" },
+  { id: "slate",   label: "Light Slate",   type: "css", css: "linear-gradient(180deg, #f4f6fa 0%, #e7ecf3 100%)" },
+  { id: "azure",   label: "Soft Azure",    type: "css", css: "radial-gradient(120% 100% at 50% 0%, #f2f7ff 0%, #e6eefb 55%, #dbe6f6 100%)" },
+  { id: "sky",     label: "Pale Sky",      type: "css", css: "linear-gradient(180deg, #f5f9ff 0%, #e8f0fb 100%)" },
+  { id: "sand",    label: "Warm Sand",     type: "css", css: "linear-gradient(180deg, #fbfaf7 0%, #f0ede6 100%)" },
+  { id: "mint",    label: "Fresh Mint",    type: "css", css: "linear-gradient(180deg, #f6fbf8 0%, #e8f3ee 100%)" },
+  { id: "pearl",   label: "Pearl Grey",    type: "css", css: "linear-gradient(180deg, #fafbfc 0%, #eceff3 100%)" },
+  { id: "linen",   label: "Soft Linen",    type: "css", css: "radial-gradient(120% 90% at 50% 6%, #ffffff 0%, #f1f0ec 70%, #e8e6df 100%)" },
 ];
 
 /* ═══════════════════ 5. COLOR THEMES (accent) ═════════════════════════ */
+/* Professional accent palette — corporate blue is the default.               */
 const THEMES = [
-  { id: "gold",      color: "#e8c66a" },   // default — matches the logo/brand
-  { id: "champagne", color: "#f0d9a6" },
-  { id: "royal",     color: "#8fb2ff" },
-  { id: "emerald",   color: "#8fe0b8" },
-  { id: "rose",      color: "#f0a4b0" },
-  { id: "amber",     color: "#f2b661" },
-  { id: "cyan",      color: "#6fe6f0" },
-  { id: "violet",    color: "#c3a6ff" },
-  { id: "coral",     color: "#ff9e7a" },
-  { id: "platinum",  color: "#dfe7f5" },
+  { id: "blue",      color: "#2563eb" },   // default — corporate blue
+  { id: "navy",      color: "#1e3a5f" },
+  { id: "indigo",    color: "#4f46e5" },
+  { id: "teal",      color: "#0d9488" },
+  { id: "emerald",   color: "#059669" },
+  { id: "sky",       color: "#0284c7" },
+  { id: "slate",     color: "#475569" },
+  { id: "amber",     color: "#b45309" },
+  { id: "rose",      color: "#be123c" },
+  { id: "violet",    color: "#7c3aed" },
 ];
 
 /* ═══════════ INTERFACE SCHEMES — 10 icon / design styles ══════════════
    Each scheme recolours the whole interface (accent + tiles + icon line-art)
    via CSS variables scoped to body[data-scheme]. Applied by applyScheme().  */
 const SCHEMES = [
-  { id: "royalgold", label: "Royal Gold", accent: "#e8c66a" },
-  { id: "cyberneon", label: "Cyber Neon", accent: "#3df0ff" },
-  { id: "emerald",   label: "Emerald",    accent: "#5fe0a0" },
-  { id: "crimson",   label: "Crimson",    accent: "#ff6b6b" },
-  { id: "sapphire",  label: "Sapphire",   accent: "#7aa8ff" },
-  { id: "amethyst",  label: "Amethyst",   accent: "#c79bff" },
-  { id: "platinum",  label: "Platinum",   accent: "#dfe7f5" },
-  { id: "sunset",    label: "Sunset",     accent: "#ff9e5e" },
-  { id: "rosegold",  label: "Rose Gold",  accent: "#f2b7c0" },
-  { id: "mono",      label: "Mono Outline", accent: "#cfe0ff" },
+  { id: "royalgold", label: "Corporate Blue", accent: "#2563eb" },
+  { id: "cyberneon", label: "Teal",           accent: "#0891b2" },
+  { id: "emerald",   label: "Emerald",        accent: "#059669" },
+  { id: "crimson",   label: "Crimson",        accent: "#dc2626" },
+  { id: "sapphire",  label: "Sapphire",       accent: "#1d4ed8" },
+  { id: "amethyst",  label: "Amethyst",       accent: "#7c3aed" },
+  { id: "platinum",  label: "Graphite",       accent: "#475569" },
+  { id: "sunset",    label: "Amber",          accent: "#ea580c" },
+  { id: "rosegold",  label: "Rose",           accent: "#e11d63" },
+  { id: "mono",      label: "Mono Slate",     accent: "#334155" },
 ];
 
 /* ═══════════════════ 6. SOUND SETTINGS ════════════════════════════════ */
@@ -342,7 +342,7 @@ const settings = {
   scheme:    store.get("scheme", "royalgold"), // interface / icon design scheme
   voiceName: store.get("voiceName", ""),       // chosen TTS voice ("" = automatic)
   user:      store.get("user", "guest"),
-  scene:     store.get("scene", "photo"),   // ship the rainy background.jpg by default
+  scene:     store.get("scene", "clean"),   // clean white corporate background by default
   // ── Brother Thomas / OpenJarvis (local AI) ──────────────────────────
   jarvisEnabled:  store.get("jarvisEnabled", false),
   jarvisEndpoint: store.get("jarvisEndpoint", "http://localhost:8000/v1/chat/completions"),
@@ -519,7 +519,7 @@ function applyScene(id) {
     // verify the file exists; if not, fall back to the royal CSS scene
     const img = new Image();
     img.onload = () => photo.classList.add("active");
-    img.onerror = () => { photo.classList.remove("active"); toast("No photo at " + scene.src + " — using Royal Night"); applyScene("royal"); };
+    img.onerror = () => { photo.classList.remove("active"); toast("No photo at " + scene.src + " — using Clean White"); applyScene("clean"); };
     img.src = withV(scene.src);
   } else if (scene.type === "css") {
     photo.style.backgroundImage = scene.css;
@@ -1390,9 +1390,9 @@ function buildGallery() {
     else if (s.type === "photo") {
       // don't reference the file in CSS (avoids a 404 when it's absent);
       // applyScene() loads it via JS and falls back gracefully if missing.
-      bg = "radial-gradient(circle at 50% 42%, rgba(240,208,120,.25), #14265e 45%, #060c22 82%)";
+      bg = "linear-gradient(160deg, #eef3f9 0%, #dbe4f0 100%)";
       hint = `<span class="gt-hint">★</span>`;
-    } else bg = "radial-gradient(circle at 50% 40%, #1a2e6e, #0a1436 70%)";
+    } else bg = "linear-gradient(160deg, #f4f6fa 0%, #e7ecf3 100%)";
     tile.style.background = bg;
     tile.innerHTML = `${hint}<span class="gt-label">${s.label}</span>`;
     tile.addEventListener("click", () => { Sound.play("tap"); applyScene(s.id); toast(s.label + " background applied"); });
@@ -1461,8 +1461,8 @@ function buildSettings() {
       tile.dataset.scene = s.id;
       let bg;
       if (s.type === "css") bg = s.css;
-      else if (s.type === "photo") bg = "radial-gradient(circle at 50% 42%, rgba(240,208,120,.28), #14265e 45%, #060c22 82%)";
-      else bg = "radial-gradient(circle at 50% 40%, #1a2e6e, #0a1436 70%)";
+      else if (s.type === "photo") bg = "linear-gradient(160deg, #eef3f9 0%, #dbe4f0 100%)";
+      else bg = "linear-gradient(160deg, #f4f6fa 0%, #e7ecf3 100%)";
       tile.style.background = bg;
       tile.innerHTML = `<span class="st-label">${s.label}</span>`;
       tile.addEventListener("click", () => { Sound.play("tap"); applyScene(s.id); $$("#scene-grid .scene-tile").forEach(x => x.classList.toggle("active", x.dataset.scene === s.id)); });
