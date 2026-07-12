@@ -1252,8 +1252,8 @@ function buildDock() {
   mute.className = "dock-btn"; mute.id = "btn-mute"; mute.title = "Mute / unmute";
   mute.innerHTML =
     `<span class="db-icon">
-       <svg id="icon-sound-on" viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="#eaf7ff" stroke="none"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="#eaf7ff" stroke-width="1.8" stroke-linecap="round"/></svg>
-       <svg id="icon-sound-off" viewBox="0 0 24 24" class="hidden"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="#eaf7ff" stroke="none"/><path d="M16 9l6 6M22 9l-6 6" fill="none" stroke="#eaf7ff" stroke-width="1.8" stroke-linecap="round"/></svg>
+       <svg id="icon-sound-on" viewBox="0 0 24 24"><path d="M4 9.5h3l4.5-3.6v12.2L7 14.5H4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+       <svg id="icon-sound-off" viewBox="0 0 24 24" class="hidden"><path d="M4 9.5h3l4.5-3.6v12.2L7 14.5H4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M16 9.5l5 5M21 9.5l-5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
      </span><span class="db-label">SOUND</span>`;
   mute.addEventListener("click", () => { Sound.ensure(); Sound.toggleMute(); });
   dock.appendChild(mute);
